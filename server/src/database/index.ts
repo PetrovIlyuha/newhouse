@@ -1,6 +1,6 @@
-require("dotenv").config();
-import { MongoClient } from "mongodb";
-import { Database } from "../lib/types";
+require('dotenv').config();
+import { MongoClient } from 'mongodb';
+import { Database } from '../lib/types';
 
 const user = process.env.DB_USER;
 const userPass = process.env.DB_USER_PASSWORD;
@@ -13,9 +13,9 @@ export const connectDatabase = async (): Promise<Database> => {
     useUnifiedTopology: true
   });
 
-  const db = client.db("main");
+  const db = client.db('main');
 
   return {
-    listings: db.collection("listings_test")
+    listings: db.collection('listings_test')
   };
 };
