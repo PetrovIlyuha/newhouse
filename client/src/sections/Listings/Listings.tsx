@@ -96,6 +96,7 @@ export const Listings = ({ title }: Props) => {
     <Alert
       type="error"
       message="Deletion is not possible due to server error..."
+      className="listings__alert"
     />
   ) : null;
 
