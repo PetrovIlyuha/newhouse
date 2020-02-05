@@ -1,6 +1,6 @@
-require('dotenv').config();
+// require('dotenv').config();
 import { MongoClient } from 'mongodb';
-import { Database } from '../lib/types';
+import { Database, User, Listing, Booking } from '../lib/types';
 
 const user = process.env.DB_USER;
 const userPass = process.env.DB_USER_PASSWORD;
@@ -16,6 +16,8 @@ export const connectDatabase = async (): Promise<Database> => {
   const db = client.db('main');
 
   return {
-    listings: db.collection('listings_test')
+    bookings: db.collection<Booking>('bookings'),
+    listings: db.collection<Listing>('listings'),
+    users: db.collection<User>('users')
   };
 };
