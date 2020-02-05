@@ -24,5 +24,9 @@ export const Google = {
       personFields: 'emailAddresses,names,photos'
     });
     return { user: data };
+    //           try {
+    // } catch (error) {
+    //   return `Failed to Login with Google: ${error}`;
+    // }
   }
 };
