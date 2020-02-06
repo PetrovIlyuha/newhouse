@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from 'react';
+import { Redirect } from 'react-router-dom';
 import { useApolloClient, useMutation } from '@apollo/react-hooks';
-import { Card, Layout, Typography } from 'antd';
+import { Card, Layout, Spin, Typography } from 'antd';
+import { ErrorBanner } from '../../lib/components/ErrorBanner/index';
 import { LOG_IN } from '../../lib/graphql/mutations/LogIn/index';
 import { AUTH_URL } from '../../lib/graphql/queries/AuthUrl/index';
 import { AuthUrl as AuthUrlData } from '../../lib/graphql/queries/AuthUrl/__generated__/AuthUrl';
@@ -9,15 +11,20 @@ import {
   LogInVariables
 } from '../../lib/graphql/mutations/LogIn/__generated__/LogIn';
 import { Viewer } from '../../lib/types';
+import {
+  displaySuccessNotification,
+  displayErrorMessage
+} from '../../lib/utils/index';
 // Image assets
 import googleLogo from './assets/google_logo.jpg';
+
+const { Content } = Layout;
+const { Text, Title } = Typography;
 
 interface Props {
   setViewer: (viewer: Viewer) => void;
 }
 
-const { Content } = Layout;
-const { Text, Title } = Typography;
 export const Login = ({ setViewer }: Props) => {
   const client = useApolloClient();
   const [
@@ -27,6 +34,7 @@ export const Login = ({ setViewer }: Props) => {
     onCompleted: data => {
       if (data && data.logIn) {
         setViewer(data.logIn);
+        displaySuccessNotification('You have successfully Logged In!');
       }
     }
   });
@@ -43,17 +51,39 @@ export const Login = ({ setViewer }: Props) => {
     }
   }, []);
 
+  if (logInLoading) {
+    return (
+      <Content className="log-in">
+        <Spin size="large" tip="Loggin you In..." />
+      </Content>
+    );
+  }
+
+  if (logInData && logInData.logIn) {
+    const { id: viewerId } = logInData.logIn;
+    return <Redirect to={`/user/${viewerId}`} />;
+  }
+
   const handleAuthorize = async () => {
     try {
       const { data } = await client.query<AuthUrlData>({
         query: AUTH_URL
       });
       window.location.href = data.authUrl;
-    } catch (err) {}
+    } catch (err) {
+      displayErrorMessage(
+        'Sorry! We were unable to log you in..Try Again or contact client service!'
+      );
+    }
   };
+
+  const logInErrorBannerElement = logInError ? (
+    <ErrorBanner description="Sorry! We were unable to log you in..Try Again or contact client service!" />
+  ) : null;
 
   return (
     <Content className="log-in">
+      {logInErrorBannerElement}
       <Card className="log-in-card">
         <div className="log-in-card__intro">
           <Title level={3} className="log-in-card__intro-title">
