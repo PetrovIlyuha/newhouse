@@ -2,14 +2,14 @@
 /* eslint-disable */
 // This file was automatically generated and should not be edited.
 
-import { LogInInput } from "./../../../globalTypes";
+import { LogInInput } from './../../../globalTypes';
 
 // ====================================================
 // GraphQL mutation operation: LogIn
 // ====================================================
 
 export interface LogIn_logIn {
-  __typename: "Viewer";
+  __typename: 'Viewer';
   id: string | null;
   token: string | null;
   avatar: string | null;
