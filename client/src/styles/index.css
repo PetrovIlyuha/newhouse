@@ -523,6 +523,7 @@
   text-align: left;
   white-space: nowrap;
   padding: 10px;
+  font-family: Oswald;
 }
 .not-found {
   display: flex;
