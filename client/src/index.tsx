@@ -10,8 +10,9 @@ import { Listing } from './sections/Listing';
 import { Host } from './sections/Host';
 import { Home } from './sections/Home';
 import { Login } from './sections/Login';
+import { AppHeader } from './sections/AppHeader';
 import * as serviceWorker from './serviceWorker';
-import { Layout } from 'antd';
+import { Affix, Layout } from 'antd';
 import './styles/index.css';
 import { Viewer } from './lib/types';
 
@@ -32,6 +33,9 @@ const App = () => {
   return (
     <Router>
       <Layout id="app">
+        <Affix offsetTop={0} className="app__affix-header">
+          <AppHeader viewer={viewer} />
+        </Affix>
         <Switch>
           <Route exact path="/" component={Home} />
           <Route exact path="/host" component={Host} />
