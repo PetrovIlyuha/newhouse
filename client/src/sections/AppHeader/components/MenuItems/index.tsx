@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Avatar, Button, Icon, Menu } from 'antd';
+import { LOG_OUT } from '../../../../lib/graphql/mutations/LogOut/index';
+import { LogOut as LogOutData } from '../../../../lib/graphql/mutations/LogOut/__generated__/LogOut';
 import { Viewer } from '../../../../lib/types';
 const { Item, SubMenu } = Menu;
 
