@@ -1,11 +1,10 @@
 require('dotenv').config();
-import cookieParser from 'cookie-parser';
+
 import express, { Application } from 'express';
+import cookieParser from 'cookie-parser';
 import { ApolloServer } from 'apollo-server-express';
-import { connectDatabase } from './database/index';
-import { typeDefs } from './graphql/typeDefs';
-import { resolvers } from './graphql/resolvers/index';
-const PORT = process.env.PORT;
+import { connectDatabase } from './database';
+import { typeDefs, resolvers } from './graphql';
 
 const mount = async (app: Application) => {
   const db = await connectDatabase();
@@ -17,11 +16,11 @@ const mount = async (app: Application) => {
     resolvers,
     context: ({ req, res }) => ({ db, req, res })
   });
+
   server.applyMiddleware({ app, path: '/api' });
-  app.listen(PORT);
-  console.log(`[app]: http://localhost:${PORT}`);
-  const listings = await db.listings.find({}).toArray();
-  console.log(listings);
+  app.listen(process.env.PORT);
+
+  console.log(`[app] : http://localhost:${process.env.PORT}`);
 };
 
 mount(express());

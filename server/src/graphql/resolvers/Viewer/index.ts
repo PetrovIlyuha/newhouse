@@ -1,8 +1,8 @@
 import crypto from 'crypto';
-import { Response, Request } from 'express';
+import { Request, Response } from 'express';
 import { IResolvers } from 'apollo-server-express';
+import { Google } from '../../../lib/api';
 import { Viewer, Database, User } from '../../../lib/types';
-import { Google } from '../../../lib/api/Google';
 import { LogInArgs } from './types';
 
 const cookieOptions = {
@@ -21,18 +21,21 @@ const logInViaGoogle = async (
   const { user } = await Google.logIn(code);
 
   if (!user) {
-    throw new Error('Google Login Error...');
+    throw new Error('Google login error');
   }
-  // names/photos/email lists
+
+  // Name/Photo/Email Lists
   const userNamesList = user.names && user.names.length ? user.names : null;
   const userPhotosList = user.photos && user.photos.length ? user.photos : null;
   const userEmailsList =
     user.emailAddresses && user.emailAddresses.length
       ? user.emailAddresses
       : null;
-  // User display name
+
+  // User Display Name
   const userName = userNamesList ? userNamesList[0].displayName : null;
-  // User id
+
+  // User Id
   const userId =
     userNamesList &&
     userNamesList[0].metadata &&
@@ -43,12 +46,13 @@ const logInViaGoogle = async (
   // User Avatar
   const userAvatar =
     userPhotosList && userPhotosList[0].url ? userPhotosList[0].url : null;
+
   // User Email
   const userEmail =
     userEmailsList && userEmailsList[0].value ? userEmailsList[0].value : null;
 
-  if (!userName || !userId || !userAvatar || !userEmail) {
-    throw new Error('Google login error...');
+  if (!userId || !userName || !userAvatar || !userEmail) {
+    throw new Error('Google login error');
   }
 
   const updateRes = await db.users.findOneAndUpdate(
@@ -65,6 +69,7 @@ const logInViaGoogle = async (
   );
 
   let viewer = updateRes.value;
+
   if (!viewer) {
     const insertResult = await db.users.insertOne({
       _id: userId,
@@ -82,7 +87,7 @@ const logInViaGoogle = async (
 
   res.cookie('viewer', userId, {
     ...cookieOptions,
-    maxAge: 7 * 24 * 60 * 60 * 1000
+    maxAge: 365 * 24 * 60 * 60 * 1000
   });
 
   return viewer;
@@ -99,17 +104,19 @@ const logInViaCookie = async (
     { $set: { token } },
     { returnOriginal: false }
   );
+
   const viewer = updateRes.value;
 
   if (!viewer) {
     res.clearCookie('viewer', cookieOptions);
   }
+
   return viewer;
 };
 
 export const viewerResolvers: IResolvers = {
   Query: {
-    authUrl: () => {
+    authUrl: (): string => {
       try {
         return Google.authUrl;
       } catch (error) {

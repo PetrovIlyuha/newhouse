@@ -5,6 +5,7 @@ const auth = new google.auth.OAuth2(
   process.env.G_CLIENT_SECRET,
   `${process.env.PUBLIC_URL}/login`
 );
+
 export const Google = {
   authUrl: auth.generateAuthUrl({
     // eslint-disable-next-line @typescript-eslint/camelcase
@@ -23,10 +24,7 @@ export const Google = {
       resourceName: 'people/me',
       personFields: 'emailAddresses,names,photos'
     });
+
     return { user: data };
-    //           try {
-    // } catch (error) {
-    //   return `Failed to Login with Google: ${error}`;
-    // }
   }
 };

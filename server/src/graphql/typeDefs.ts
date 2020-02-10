@@ -8,12 +8,15 @@ export const typeDefs = gql`
     hasWallet: Boolean
     didRequest: Boolean!
   }
+
   input LogInInput {
     code: String!
   }
+
   type Query {
     authUrl: String!
   }
+
   type Mutation {
     logIn(input: LogInInput): Viewer!
     logOut: Viewer!

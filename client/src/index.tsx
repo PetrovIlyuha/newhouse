@@ -1,23 +1,25 @@
 import React, { useState } from 'react';
+import ReactDOM from 'react-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import ApolloClient from 'apollo-boost';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import { ApolloProvider } from 'react-apollo';
-import { render } from 'react-dom';
-import { Listings } from './sections/Listings';
-import { NotFound } from './sections/NotFound';
-import { User } from './sections/User';
-import { Listing } from './sections/Listing';
-import { Host } from './sections/Host';
-import { Home } from './sections/Home';
-import { Login } from './sections/Login';
-import { AppHeader } from './sections/AppHeader';
-import * as serviceWorker from './serviceWorker';
+import { ApolloProvider } from '@apollo/react-hooks';
 import { Affix, Layout } from 'antd';
-import './styles/index.css';
+import {
+  AppHeader,
+  Home,
+  Host,
+  Listing,
+  Listings,
+  Login,
+  NotFound,
+  User
+} from './sections';
 import { Viewer } from './lib/types';
+import * as serviceWorker from './serviceWorker';
+import './styles/index.css';
 
 const client = new ApolloClient({
-  uri: 'http://localhost:9000/api'
+  uri: '/api'
 });
 
 const initialViewer: Viewer = {
@@ -27,8 +29,10 @@ const initialViewer: Viewer = {
   hasWallet: null,
   didRequest: false
 };
+
 const App = () => {
   const [viewer, setViewer] = useState<Viewer>(initialViewer);
+
   return (
     <Router>
       <Layout id="app">
@@ -52,11 +56,15 @@ const App = () => {
     </Router>
   );
 };
-render(
+
+ReactDOM.render(
   <ApolloProvider client={client}>
     <App />
   </ApolloProvider>,
   document.getElementById('root')
 );
 
+// If you want your app to work offline and load faster, you can change
+// unregister() to register() below. Note this comes with some pitfalls.
+// Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();

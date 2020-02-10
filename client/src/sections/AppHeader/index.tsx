@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Layout } from 'antd';
 import { Viewer } from '../../lib/types';
-import { MenuItems } from './components/MenuItems';
+import { MenuItems } from './components';
 import logo from './assets/house.png';
 
 const { Header } = Layout;

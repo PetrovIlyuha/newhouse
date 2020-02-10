@@ -2,32 +2,32 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useMutation } from '@apollo/react-hooks';
 import { Avatar, Button, Icon, Menu } from 'antd';
-import { LOG_OUT } from '../../../../lib/graphql/mutations/LogOut/index';
+import { LOG_OUT } from '../../../../lib/graphql/mutations';
 import { LogOut as LogOutData } from '../../../../lib/graphql/mutations/LogOut/__generated__/LogOut';
-import { Viewer } from '../../../../lib/types';
 import {
   displaySuccessNotification,
   displayErrorMessage
-} from '../../../../lib/utils/index';
-const { Item, SubMenu } = Menu;
+} from '../../../../lib/utils';
+import { Viewer } from '../../../../lib/types';
 
 interface Props {
   viewer: Viewer;
   setViewer: (viewer: Viewer) => void;
 }
+
+const { Item, SubMenu } = Menu;
+
 export const MenuItems = ({ viewer, setViewer }: Props) => {
   const [logOut] = useMutation<LogOutData>(LOG_OUT, {
     onCompleted: data => {
       if (data && data.logOut) {
         setViewer(data.logOut);
-        displaySuccessNotification(
-          "You've successfully logge Out! See you soon"
-        );
+        displaySuccessNotification("You've successfully logged out!");
       }
     },
-    onError: data => {
+    onError: () => {
       displayErrorMessage(
-        'Sorry! Somehow we are unable to log you out! Try again after a while'
+        "Sorry! We weren't able to log you out. Please try again later!"
       );
     }
   });
@@ -48,7 +48,7 @@ export const MenuItems = ({ viewer, setViewer }: Props) => {
         <Item key="/logout">
           <div onClick={handleLogOut}>
             <Icon type="logout" />
-            Logout
+            Log out
           </div>
         </Item>
       </SubMenu>
@@ -59,6 +59,7 @@ export const MenuItems = ({ viewer, setViewer }: Props) => {
         </Link>
       </Item>
     );
+
   return (
     <Menu mode="horizontal" selectable={false} className="menu">
       <Item key="/host">
