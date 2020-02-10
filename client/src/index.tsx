@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import ApolloClient from 'apollo-boost';
-import { ApolloProvider } from '@apollo/react-hooks';
-import { Affix, Layout } from 'antd';
+import { ApolloProvider, useMutation } from '@apollo/react-hooks';
+import { Affix, Layout, Spin } from 'antd';
 import {
   AppHeader,
   Home,
@@ -14,12 +14,26 @@ import {
   NotFound,
   User
 } from './sections';
+import { LOG_IN } from './lib/graphql/mutations';
+import {
+  LogIn as LogInData,
+  LogInVariables
+} from './lib/graphql/mutations/LogIn/__generated__/LogIn';
 import { Viewer } from './lib/types';
 import * as serviceWorker from './serviceWorker';
 import './styles/index.css';
+import { AppHeaderSkeleton, ErrorBanner } from './lib/components';
 
 const client = new ApolloClient({
-  uri: '/api'
+  uri: '/api',
+  request: async operation => {
+    const token = sessionStorage.getItem('token');
+    operation.setContext({
+      headers: {
+        'X-CSRF-TOKEN': token || ''
+      }
+    });
+  }
 });
 
 const initialViewer: Viewer = {
@@ -32,10 +46,43 @@ const initialViewer: Viewer = {
 
 const App = () => {
   const [viewer, setViewer] = useState<Viewer>(initialViewer);
+  const [logIn, { error }] = useMutation<LogInData, LogInVariables>(LOG_IN, {
+    onCompleted: data => {
+      if (data && data.logIn) {
+        setViewer(data.logIn);
 
+        if (data.logIn.token) {
+          sessionStorage.setItem('token', data.logIn.token);
+        } else {
+          sessionStorage.removeItem('token');
+        }
+      }
+    }
+  });
+  const logInRef = useRef(logIn);
+
+  useEffect(() => {
+    logInRef.current();
+  }, []);
+
+  if (!viewer.didRequest && !error) {
+    return (
+      <Layout className="app-skeleton">
+        <AppHeaderSkeleton />
+        <div className="app-skeleton__spin-section">
+          <Spin size="large" tip="Launching FreshStart App" />
+        </div>
+      </Layout>
+    );
+  }
+
+  const logInErrorMessage = error ? (
+    <ErrorBanner description="We are unable to check if you were logged in. Try Again, Please!" />
+  ) : null;
   return (
     <Router>
       <Layout id="app">
+        {logInErrorMessage}
         <Affix offsetTop={0} className="app__affix-header">
           <AppHeader viewer={viewer} setViewer={setViewer} />
         </Affix>
