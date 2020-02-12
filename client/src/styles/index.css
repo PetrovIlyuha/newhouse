@@ -27,6 +27,7 @@
 .app-header__logo {
   display: inline-block;
   padding: 0 20px;
+  background: white;
 }
 .app-header__logo img {
   width: 36px;
