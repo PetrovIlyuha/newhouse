@@ -8,8 +8,8 @@
 //==============================================================
 
 export enum ListingType {
-  APARTMENT = "APARTMENT",
-  HOUSE = "HOUSE",
+  APARTMENT = 'APARTMENT',
+  HOUSE = 'HOUSE'
 }
 
 export interface LogInInput {
