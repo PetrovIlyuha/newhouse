@@ -1,5 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
+// @generated
 // This file was automatically generated and should not be edited.
 
 // ====================================================
@@ -7,7 +8,7 @@
 // ====================================================
 
 export interface User_user_bookings_result_listing {
-  __typename: 'Listing';
+  __typename: "Listing";
   id: string;
   title: string;
   image: string;
@@ -17,7 +18,7 @@ export interface User_user_bookings_result_listing {
 }
 
 export interface User_user_bookings_result {
-  __typename: 'Booking';
+  __typename: "Booking";
   id: string;
   listing: User_user_bookings_result_listing;
   checkIn: string;
@@ -25,13 +26,13 @@ export interface User_user_bookings_result {
 }
 
 export interface User_user_bookings {
-  __typename: 'Bookings';
+  __typename: "Bookings";
   total: number;
   result: User_user_bookings_result[];
 }
 
 export interface User_user_listings_result {
-  __typename: 'Listing';
+  __typename: "Listing";
   id: string;
   title: string;
   image: string;
@@ -41,13 +42,13 @@ export interface User_user_listings_result {
 }
 
 export interface User_user_listings {
-  __typename: 'Listings';
+  __typename: "Listings";
   total: number;
   result: User_user_listings_result[];
 }
 
 export interface User_user {
-  __typename: 'User';
+  __typename: "User";
   id: string;
   name: string;
   avatar: string;
