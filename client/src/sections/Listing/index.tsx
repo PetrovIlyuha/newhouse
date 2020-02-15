@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { useQuery } from 'react-apollo';
-import { Layout } from 'antd';
+import { Layout, Col, Row } from 'antd';
 import { PageSkeleton, ErrorBanner } from '../../lib/components';
 import { LISTING } from '../../lib/graphql/queries';
+import { ListingDetails } from './components';
 import {
   Listing as ListingData,
   ListingVariables
@@ -47,6 +48,16 @@ export const Listing = ({ match }: RouteComponentProps<MatchParams>) => {
 
   const listing = data ? data.listing : null;
   const listingBookings = listing ? listing.bookings : null;
-
-  return <div>Listing Component</div>;
+  const listingDetailsElement = listing ? (
+    <ListingDetails listing={listing} />
+  ) : null;
+  return (
+    <Content className="listings">
+      <Row gutter={24} type="flex" justify="space-between">
+        <Col xs={24} lg={24}>
+          {listingDetailsElement}
+        </Col>
+      </Row>
+    </Content>
+  );
 };
