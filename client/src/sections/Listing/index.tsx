@@ -54,7 +54,7 @@ export const Listing = ({ match }: RouteComponentProps<MatchParams>) => {
   return (
     <Content className="listings">
       <Row gutter={24} type="flex" justify="space-between">
-        <Col xs={24} lg={24}>
+        <Col xs={24} lg={14}>
           {listingDetailsElement}
         </Col>
       </Row>
