@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Avatar, Divider, List, Typography } from 'antd';
 import { Listing } from '../../../../lib/graphql/queries/Listing/__generated__/Listing';
 
@@ -52,11 +53,13 @@ export const ListingBookings = ({
         return (
           <List.Item>
             {bookingHistory}
-            <Avatar
-              src={listingBooking.tenant.avatar}
-              size={64}
-              shape="square"
-            />
+            <Link to={`/user/${listingBooking.tenant.id}`}>
+              <Avatar
+                src={listingBooking.tenant.avatar}
+                size={64}
+                shape="square"
+              />
+            </Link>
           </List.Item>
         );
       }}
