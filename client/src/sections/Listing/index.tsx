@@ -4,8 +4,12 @@ import { useQuery } from 'react-apollo';
 import { Layout, Col, Row } from 'antd';
 import { PageSkeleton, ErrorBanner } from '../../lib/components';
 import { LISTING } from '../../lib/graphql/queries';
-import { ListingDetails } from './components';
-import { ListingBookings } from './components';
+import {
+  ListingDetails,
+  ListingBookings,
+  ListingCreateBooking
+} from './components';
+
 import {
   Listing as ListingData,
   ListingVariables
@@ -63,12 +67,16 @@ export const Listing = ({ match }: RouteComponentProps<MatchParams>) => {
     />
   ) : null;
 
+  const listingCreateBookingElement = <ListingCreateBooking />;
   return (
     <Content className="listings">
       <Row gutter={24} type="flex" justify="space-between">
         <Col xs={24} lg={14}>
           {listingDetailsElement}
           {listingBookingsElement}
+        </Col>
+        <Col xs={24} lg={10}>
+          {listingCreateBookingElement}
         </Col>
       </Row>
     </Content>
