@@ -1,7 +1,7 @@
 import React from 'react';
 import moment, { Moment } from 'moment';
 import { Button, Card, Divider, Typography, DatePicker } from 'antd';
-import { formatListingPrice } from '../../../../lib/utils';
+import { displayErrorMessage, formatListingPrice } from '../../../../lib/utils';
 const { Paragraph, Title } = Typography;
 
 interface Props {
@@ -21,13 +21,26 @@ export const ListingCreateBooking = ({
 }: Props) => {
   const disabledDate = (currentDate?: Moment | null) => {
     if (currentDate) {
-      const dateIsBeforeEndOfDay = currentDate.isBefore(moment());
+      const dateIsBeforeEndOfDay = currentDate.isBefore(moment().endOf('day'));
       return dateIsBeforeEndOfDay;
     } else {
       return false;
     }
   };
 
+  const verifyAndSetCheckOutDate = (selectedCheckOutDate: Moment | null) => {
+    if (checkInDate && selectedCheckOutDate) {
+      if (moment(selectedCheckOutDate).isBefore(checkInDate, 'days')) {
+        return displayErrorMessage(
+          `You can't choose the check out date which is earlier in time than the check in date...`
+        );
+      }
+    }
+    setCheckOutDate(selectedCheckOutDate);
+  };
+
+  const checkOutInputDisabled = !checkInDate;
+  const buttonDisabled = !checkInDate || !checkOutDate;
   return (
     <div className="listing-booking">
       <Card className="listing-booking__card">
@@ -44,8 +57,10 @@ export const ListingCreateBooking = ({
             <DatePicker
               value={checkInDate ? checkInDate : undefined}
               format={'YYYY/MM/DD'}
+              showToday={false}
               disabledDate={disabledDate}
               onChange={dateValue => setCheckInDate(dateValue)}
+              onOpenChange={() => setCheckOutDate(null)}
             />
           </div>
           <div className="listing-booking__card-date-picker">
@@ -53,12 +68,15 @@ export const ListingCreateBooking = ({
             <DatePicker
               value={checkOutDate ? checkOutDate : undefined}
               disabledDate={disabledDate}
-              onChange={dateValue => setCheckOutDate(dateValue)}
+              disabled={checkOutInputDisabled}
+              showToday={false}
+              onChange={dateValue => verifyAndSetCheckOutDate(dateValue)}
             />
           </div>
         </div>
         <Divider />
         <Button
+          disabled={buttonDisabled}
           size="large"
           type="primary"
           className="listing-booking__card-cta"
