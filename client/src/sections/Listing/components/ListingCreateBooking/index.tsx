@@ -19,6 +19,15 @@ export const ListingCreateBooking = ({
   setCheckInDate,
   setCheckOutDate
 }: Props) => {
+  const disabledDate = (currentDate?: Moment | null) => {
+    if (currentDate) {
+      const dateIsBeforeEndOfDay = currentDate.isBefore(moment());
+      return dateIsBeforeEndOfDay;
+    } else {
+      return false;
+    }
+  };
+
   return (
     <div className="listing-booking">
       <Card className="listing-booking__card">
@@ -33,14 +42,17 @@ export const ListingCreateBooking = ({
           <div className="listing-booking__card-date-picker">
             <Paragraph strong>Check In</Paragraph>
             <DatePicker
-              value={checkInDate}
+              value={checkInDate ? checkInDate : undefined}
+              format={'YYYY/MM/DD'}
+              disabledDate={disabledDate}
               onChange={dateValue => setCheckInDate(dateValue)}
             />
           </div>
           <div className="listing-booking__card-date-picker">
             <Paragraph strong>Check Out</Paragraph>
             <DatePicker
-              value={checkOutDate}
+              value={checkOutDate ? checkOutDate : undefined}
+              disabledDate={disabledDate}
               onChange={dateValue => setCheckOutDate(dateValue)}
             />
           </div>

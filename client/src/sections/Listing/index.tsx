@@ -75,9 +75,9 @@ export const Listing = ({ match }: RouteComponentProps<MatchParams>) => {
     <ListingCreateBooking
       price={listing.price}
       checkInDate={checkInDate}
-      setCheckInDate={setCheckInDate}
       checkOutDate={checkOutDate}
-      setCheckOutDate={setCheckInDate}
+      setCheckInDate={setCheckInDate}
+      setCheckOutDate={setCheckOutDate}
     />
   ) : null;
 
