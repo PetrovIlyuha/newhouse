@@ -1,5 +1,5 @@
 export * from './AppHeader';
-export * from './Home';
+export * from './Home/components';
 export * from './Host';
 export * from './Listing';
 export * from './Listings';
