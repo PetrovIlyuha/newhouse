@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { Layout } from 'antd';
 import { Viewer } from '../../lib/types';
 import { MenuItems } from './components';
-import SvgIcon from './assets/SVGIcon';
-
+// import SvgIcon from './assets/SVGIcon';
+import Logo from './assets/last_logo.png';
 const { Header } = Layout;
 
 interface Props {
@@ -17,7 +17,18 @@ export const AppHeader = ({ viewer, setViewer }: Props) => {
       <div className="app-header__logo-search-section">
         <div className="app-header__logo">
           <Link to="/">
-            <SvgIcon />
+            <img
+              src={Logo}
+              alt=""
+              style={{
+                position: 'absolute',
+                top: '0',
+                left: '0',
+                width: '170px',
+                height: '64px',
+                borderBottom: '2px blue solid'
+              }}
+            />
           </Link>
         </div>
       </div>
