@@ -3,6 +3,7 @@ import { RouteComponentProps, Link } from 'react-router-dom';
 import { useQuery } from '@apollo/react-hooks';
 import { LISTINGS } from '../../../lib/graphql/queries';
 import { HomeListings } from './HomeListings';
+import { HomeListingsSkeleton } from '../index';
 import {
   Listings as ListingsData,
   ListingsVariables
@@ -46,7 +47,7 @@ export const Home = ({ history }: RouteComponentProps) => {
 
   const renderListingsSection = () => {
     if (loading) {
-      return 'Loading...';
+      return <HomeListingsSkeleton />;
     }
 
     if (data) {
