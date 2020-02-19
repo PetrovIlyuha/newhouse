@@ -36,6 +36,7 @@ const parseAddress = (addressComponents: AddressComponent[]) => {
     city
   };
 };
+
 export const Google = {
   authUrl: auth.generateAuthUrl({
     // eslint-disable-next-line @typescript-eslint/camelcase
