@@ -4,7 +4,7 @@ import { Layout } from 'antd';
 import { Viewer } from '../../lib/types';
 import { MenuItems } from './components';
 // import SvgIcon from './assets/SVGIcon';
-import Logo from './assets/last_logo.png';
+import Logo from './assets/house.png';
 const { Header } = Layout;
 
 interface Props {
@@ -24,12 +24,13 @@ export const AppHeader = ({ viewer, setViewer }: Props) => {
                 position: 'absolute',
                 top: '0',
                 left: '0',
-                width: '170px',
+                width: '64px',
                 height: '64px',
                 borderBottom: '2px blue solid'
               }}
             />
           </Link>
+          <span>FreshStart</span>
         </div>
       </div>
       <div className="app-header__menu-section">
