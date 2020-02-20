@@ -1,5 +1,38 @@
 import React from 'react';
+import { useQuery } from '@apollo/react-hooks';
+import { Layout, List } from 'antd';
+import { ListingCard } from '../../lib/components';
+import { LISTINGS } from '../../lib/graphql/queries';
+import {
+  Listings as ListingsData,
+  ListingsVariables
+} from '../../lib/graphql/queries/Listings/__generated__/Listings';
+import { ListingsFilter } from '../../lib/graphql/globalTypes';
+
+const { Content } = Layout;
+const PAGE_LIMIT = 8;
 
 export function Listings() {
-  return <div>Listings</div>;
+  const { data } = useQuery<ListingsData, ListingsVariables>(LISTINGS, {
+    variables: {
+      filter: ListingsFilter.PRICE_LOW_TO_HIGH,
+      limit: PAGE_LIMIT,
+      page: 1
+    }
+  });
+
+  const listings = data ? data.listings : null;
+
+  const listingsSectionElement = listings ? (
+    <List
+      grid={{ gutter: 8, sm: 2, lg: 4, xs: 1 }}
+      dataSource={listings.result}
+      renderItem={listing => (
+        <List.Item>
+          <ListingCard listing={listing} />
+        </List.Item>
+      )}
+    ></List>
+  ) : null;
+  return <Content className="listings">{listingsSectionElement}</Content>;
 }
