@@ -1,4 +1,5 @@
 import React from 'react';
+import { RouteComponentProps } from 'react-router-dom';
 import { useQuery } from '@apollo/react-hooks';
 import { Layout, List } from 'antd';
 import { ListingCard } from '../../lib/components';
@@ -9,12 +10,17 @@ import {
 } from '../../lib/graphql/queries/Listings/__generated__/Listings';
 import { ListingsFilter } from '../../lib/graphql/globalTypes';
 
+interface MatchParams {
+  location: string;
+}
+
 const { Content } = Layout;
 const PAGE_LIMIT = 8;
 
-export function Listings() {
+export const Listings = ({ match }: RouteComponentProps<MatchParams>) => {
   const { data } = useQuery<ListingsData, ListingsVariables>(LISTINGS, {
     variables: {
+      location: match.params.location,
       filter: ListingsFilter.PRICE_LOW_TO_HIGH,
       limit: PAGE_LIMIT,
       page: 1
@@ -35,4 +41,4 @@ export function Listings() {
     ></List>
   ) : null;
   return <Content className="listings">{listingsSectionElement}</Content>;
-}
+};
