@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { RouteComponentProps, Link } from 'react-router-dom';
 import { useQuery } from '@apollo/react-hooks';
-import { Layout, Typography, List } from 'antd';
+import { Layout, Typography, List, Affix } from 'antd';
 import { ListingCard } from '../../lib/components';
 import { LISTINGS } from '../../lib/graphql/queries';
 import {
@@ -9,7 +9,11 @@ import {
   ListingsVariables
 } from '../../lib/graphql/queries/Listings/__generated__/Listings';
 import { ListingsFilter } from '../../lib/graphql/globalTypes';
-import { ListingsFilters, ListingsPagination } from './components';
+import {
+  ListingsFilters,
+  ListingsPagination,
+  ListingsSkeleton
+} from './components';
 
 interface MatchParams {
   location: string;
@@ -22,28 +26,41 @@ const PAGE_LIMIT = 8;
 export const Listings = ({ match }: RouteComponentProps<MatchParams>) => {
   const [filter, setFilter] = useState(ListingsFilter.PRICE_LOW_TO_HIGH);
   const [page, setPage] = useState(1);
-  const { data } = useQuery<ListingsData, ListingsVariables>(LISTINGS, {
-    variables: {
-      location: match.params.location,
-      filter,
-      limit: PAGE_LIMIT,
-      page
+  const { data, loading } = useQuery<ListingsData, ListingsVariables>(
+    LISTINGS,
+    {
+      variables: {
+        location: match.params.location,
+        filter,
+        limit: PAGE_LIMIT,
+        page
+      }
     }
-  });
-
+  );
+  if (loading) {
+    return (
+      <Content className="listings">
+        <ListingsSkeleton />
+      </Content>
+    );
+  }
   const listings = data ? data.listings : null;
   const listingsRegion = listings ? listings.region : null;
 
   const listingsSectionElement =
     listings && listings.result.length ? (
       <div>
-        <ListingsPagination
-          total={listings.total}
-          page={page}
-          limit={PAGE_LIMIT}
-          setPage={setPage}
-        />
-        <ListingsFilters filter={filter} setFilter={setFilter} />
+        <Affix>
+          <ListingsPagination
+            total={listings.total}
+            page={page}
+            limit={PAGE_LIMIT}
+            setPage={setPage}
+          />
+        </Affix>
+        <Affix>
+          <ListingsFilters filter={filter} setFilter={setFilter} />
+        </Affix>
         <List
           grid={{ gutter: 8, sm: 2, lg: 4, xs: 1 }}
           dataSource={listings.result}
