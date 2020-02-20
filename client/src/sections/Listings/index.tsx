@@ -9,7 +9,7 @@ import {
   ListingsVariables
 } from '../../lib/graphql/queries/Listings/__generated__/Listings';
 import { ListingsFilter } from '../../lib/graphql/globalTypes';
-import { ListingsFilters } from './components';
+import { ListingsFilters, ListingsPagination } from './components';
 
 interface MatchParams {
   location: string;
@@ -37,6 +37,12 @@ export const Listings = ({ match }: RouteComponentProps<MatchParams>) => {
   const listingsSectionElement =
     listings && listings.result.length ? (
       <div>
+        <ListingsPagination
+          total={listings.total}
+          page={page}
+          limit={PAGE_LIMIT}
+          setPage={setPage}
+        />
         <ListingsFilters filter={filter} setFilter={setFilter} />
         <List
           grid={{ gutter: 8, sm: 2, lg: 4, xs: 1 }}

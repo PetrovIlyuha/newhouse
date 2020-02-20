@@ -15,8 +15,7 @@ import { Col, Row, Layout, Typography } from 'antd';
 
 import londonImage from '../assets/business_london.jpg';
 import greeceWeekend from '../assets/weekend.png';
-// import mapBackgroundLight from '../assets/map-background_light.png';
-import mapBackgroundLight from '../assets/light_map_alternative.jpg';
+import ny_bg from '../assets/NY_illustration.jpg';
 
 const { Paragraph, Title } = Typography;
 const { Content } = Layout;
@@ -63,7 +62,7 @@ export const Home = ({ history }: RouteComponentProps) => {
     <Content
       className="home"
       style={{
-        backgroundImage: `url(${mapBackgroundLight})`,
+        backgroundImage: `url(${ny_bg})`,
         backgroundSize: 'cover'
       }}
     >
