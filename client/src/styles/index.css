@@ -44,7 +44,7 @@
 }
 .app-header__search-input {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   flex-grow: 1;
   padding-right: 10px;
 }
