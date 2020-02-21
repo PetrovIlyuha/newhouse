@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, withRouter, RouteComponentProps } from 'react-router-dom';
 import { Input, Layout } from 'antd';
 import { Viewer } from '../../lib/types';
@@ -6,15 +6,30 @@ import { MenuItems } from './components';
 // import SvgIcon from './assets/SVGIcon';
 import Logo from './assets/house.png';
 import { displayErrorMessage } from '../../lib/utils';
-const { Header } = Layout;
 
+const { Header } = Layout;
 const { Search } = Input;
 interface Props {
   viewer: Viewer;
   setViewer: (viewer: Viewer) => void;
 }
+
 export const AppHeader = withRouter(
-  ({ viewer, setViewer, history }: Props & RouteComponentProps) => {
+  ({ viewer, setViewer, location, history }: Props & RouteComponentProps) => {
+    const [search, setSearch] = useState('');
+
+    useEffect(() => {
+      const { pathname } = location;
+      const pathnameSubStrings = pathname.split('/');
+      if (!pathname.includes('/listings')) {
+        setSearch('');
+      }
+
+      if (pathname.includes('/listings') && pathnameSubStrings.length === 3) {
+        setSearch(pathnameSubStrings[2]);
+      }
+    }, [location]);
+
     const onSearch = (value: string) => {
       const trimmedValue = value.trim();
       if (trimmedValue) {
@@ -23,6 +38,7 @@ export const AppHeader = withRouter(
         displayErrorMessage('Please Enter a valid search...');
       }
     };
+
     return (
       <Header className="app-header">
         <div className="app-header__logo-search-section">
@@ -44,7 +60,13 @@ export const AppHeader = withRouter(
             </Link>
           </div>
           <div className="app-header__search-input">
-            <Search placeholder="Search 'Moscow'" onSearch={onSearch} />
+            <Search
+              placeholder="Search 'Moscow'"
+              enterButton
+              onChange={evt => setSearch(evt.target.value)}
+              onSearch={onSearch}
+              value={search}
+            />
           </div>
         </div>
         <div className="app-header__menu-section">
