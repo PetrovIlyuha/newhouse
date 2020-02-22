@@ -1,9 +1,10 @@
 import crypto from 'crypto';
 import { Request, Response } from 'express';
 import { IResolvers } from 'apollo-server-express';
-import { Google } from '../../../lib/api';
+import { Google, Stripe } from '../../../lib/api';
 import { Viewer, Database, User } from '../../../lib/types';
-import { LogInArgs } from './types';
+import { authorize } from './../../../lib/utils/index';
+import { LogInArgs, ConnectStripeArgs } from './types';
 
 const cookieOptions = {
   httpOnly: true,
@@ -165,8 +166,19 @@ export const viewerResolvers: IResolvers = {
         throw new Error(`Failed to log out: ${error}`);
       }
     },
-    connectStripe: (): Viewer => {
-      return { didRequest: true };
+    connectStripe: async (
+      _root: undefined,
+      { input }: ConnectStripeArgs,
+      { db, req }: { db: Database; req: Request }
+    ): Promise<Viewer> => {
+      try {
+        const { code } = input;
+
+        const viewer = await authorize(db, req);
+        if (!viewer) {
+          throw new Error("Viewer can't be found...");
+        }
+      } catch {}
     },
     disconnectStripe: (): Viewer => {
       return { didRequest: true };
