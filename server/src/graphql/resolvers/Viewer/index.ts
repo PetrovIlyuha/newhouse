@@ -174,14 +174,70 @@ export const viewerResolvers: IResolvers = {
       try {
         const { code } = input;
 
-        const viewer = await authorize(db, req);
+        let viewer = await authorize(db, req);
         if (!viewer) {
           throw new Error("Viewer can't be found...");
         }
-      } catch {}
+
+        const wallet = await Stripe.connect(code);
+        if (!wallet) {
+          throw new Error('Stripe grant permission error');
+        }
+        const updateRes = await db.users.findOneAndUpdate(
+          {
+            _id: viewer._id
+          },
+          { $set: { walletId: wallet.stripe_user_id } },
+          { returnOriginal: false }
+        );
+        if (!updateRes.value) {
+          throw new Error('Viewer could not be updated..');
+        }
+
+        viewer = updateRes.value;
+
+        return {
+          _id: viewer._id,
+          token: viewer.token,
+          avatar: viewer.avatar,
+          walletId: viewer.walletId,
+          didRequest: true
+        };
+      } catch (error) {
+        throw new Error(`Failed to connect with Stripe: ${error}`);
+      }
     },
-    disconnectStripe: (): Viewer => {
-      return { didRequest: true };
+    disconnectStripe: async (
+      _root: undefined,
+      _args: {},
+      { db, req }: { db: Database; req: Request }
+    ): Promise<Viewer> => {
+      try {
+        let viewer = await authorize(db, req);
+        if (!viewer) {
+          throw new Error('Viewer cannot be found...');
+        }
+        const updateRes = await db.users.findOneAndUpdate(
+          {
+            _id: viewer._id
+          },
+          { $set: { walletId: undefined } },
+          { returnOriginal: false }
+        );
+        if (!updateRes.value) {
+          throw new Error('Viewer could not be found...');
+        }
+        viewer = updateRes.value;
+        return {
+          _id: viewer._id,
+          token: viewer.token,
+          avatar: viewer.avatar,
+          walletId: viewer.walletId,
+          didRequest: true
+        };
+      } catch (err) {
+        throw new Error(`Failed to disconnect with Stripe`);
+      }
     }
   },
   Viewer: {

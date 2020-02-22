@@ -12,9 +12,6 @@ export const Stripe = {
       code
       /* eslint-enable @typescript-eslint/camelcase */
     });
-    if (!response) {
-      return new Error('Failed to connect with Stripe...');
-    }
     return response;
   }
 };
