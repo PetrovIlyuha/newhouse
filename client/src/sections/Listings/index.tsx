@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useReducer } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { RouteComponentProps, Link } from 'react-router-dom';
 import { useQuery } from '@apollo/react-hooks';
 import { Layout, Typography, List, Affix } from 'antd';

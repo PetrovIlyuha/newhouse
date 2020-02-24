@@ -8,7 +8,7 @@
 // ====================================================
 
 export interface DisconnectStripe_disconnectStripe {
-  __typename: "Viewer";
+  __typename: 'Viewer';
   hasWallet: boolean | null;
 }
 
