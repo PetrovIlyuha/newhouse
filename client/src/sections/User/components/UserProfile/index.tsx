@@ -1,5 +1,6 @@
 import React from 'react';
-import { Avatar, Card, Button, Divider, Typography } from 'antd';
+import { Avatar, Card, Button, Divider, Typography, Tag } from 'antd';
+import { formatListingPrice } from '../../../../lib/utils/index';
 import { User as UserData } from '../../../../lib/graphql/queries/User/__generated__/User';
 
 interface Props {
@@ -15,33 +16,60 @@ export const UserProfile = ({ user, viewerIsUser }: Props) => {
   const redirectToStripe = () => {
     window.location.href = stripeAuthUrl;
   };
+
+  const additionalDetails = user.hasWallet ? (
+    <>
+      <Paragraph>
+        <Tag color="green">Stripe registered</Tag>
+      </Paragraph>
+      <Paragraph>
+        Income Earned:{' '}
+        <Text strong>
+          {user.income ? formatListingPrice(user.income) : `$0`}
+        </Text>
+      </Paragraph>
+      <Button type="primary" className="user-user-profile__details-cta">
+        Disconnect Stripe
+      </Button>
+      <Paragraph type="secondary">
+        By disconnecting, you won't be able to receive{''}
+        <Text strong> any further payments</Text>. This will prevent users from
+        booking listings that you might have already created
+      </Paragraph>
+    </>
+  ) : (
+    <>
+      {' '}
+      <Paragraph>
+        Interested in becoming FreshStart host? Register with your Stripe
+        account!
+      </Paragraph>
+      <Button
+        type="primary"
+        className="user-profile__details-cta"
+        onClick={redirectToStripe}
+      >
+        Connect With Stripe
+      </Button>
+      <Paragraph type="secondary">
+        FreshStart uses{' '}
+        <a
+          href="https://stripe.com/en-US/connect"
+          target="_blank"
+          rel="noopener noreferre"
+        >
+          Stripe
+        </a>{' '}
+        to secure and transfer your payments and income
+      </Paragraph>
+    </>
+  );
   const additionalDetailsSection = viewerIsUser ? (
     <>
       <Divider />
       <div className="user-profile__details">
         <Title level={4}>Additional Details</Title>
-        <Paragraph>
-          Interested in becoming FreshStart host? Register with your Stripe
-          account!
-        </Paragraph>
-        <Button
-          type="primary"
-          className="user-profile__details-cta"
-          onClick={redirectToStripe}
-        >
-          Connect With Stripe
-        </Button>
-        <Paragraph type="secondary">
-          FreshStart uses{' '}
-          <a
-            href="https://stripe.com/en-US/connect"
-            target="_blank"
-            rel="noopener noreferre"
-          >
-            Stripe
-          </a>{' '}
-          to secure and transfer your payments and income
-        </Paragraph>
+        {additionalDetails}
       </div>
     </>
   ) : null;
