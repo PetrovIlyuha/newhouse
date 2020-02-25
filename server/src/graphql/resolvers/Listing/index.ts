@@ -11,8 +11,24 @@ import {
   ListingsArgs,
   ListingsData,
   ListingsFilter,
-  ListingsQuery
+  ListingsQuery,
+  HostListingInput,
+  HostListingArgs
 } from './types';
+
+const verifyHostListingInput = ({
+  title,
+  description,
+  type,
+  price
+}: HostListingInput) => {
+  if (title.length > 100) {
+    throw new Error('Listing title must be under 100 characters');
+  }
+  if (description.length > 250) {
+    throw new Error('Description length must not exceed 250 characters');
+  }
+};
 
 export const listingResolvers: IResolvers = {
   Query: {
@@ -86,6 +102,15 @@ export const listingResolvers: IResolvers = {
       } catch (error) {
         throw new Error(`Failed to query listings: ${error}`);
       }
+    }
+  },
+  Mutation: {
+    hostListing: async (
+      _root: undefined,
+      { input }: HostListingArgs,
+      { db, req }: { db: Database; req: Request }
+    ): Promise<Listing> => {
+      verifyHostListingInput(input);
     }
   },
   Listing: {
