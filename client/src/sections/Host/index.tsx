@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Form,
   Input,
@@ -6,12 +6,15 @@ import {
   Layout,
   Typography,
   InputNumber,
-  Radio
+  Radio,
+  Upload,
+  Button
 } from 'antd';
+import { UploadChangeParam } from 'antd/lib/upload';
 import { ListingType } from '../../lib/graphql/globalTypes';
 import { Link } from 'react-router-dom';
 import { Viewer } from '../../lib/types';
-import { iconColor } from '../../lib/utils';
+import { iconColor, displayErrorMessage } from '../../lib/utils';
 interface Props {
   viewer: Viewer;
 }
@@ -20,6 +23,24 @@ const { Content } = Layout;
 const { Text, Title } = Typography;
 const { Item } = Form;
 export function Host({ viewer }: Props) {
+  const [imageLoading, setImageLoading] = useState(false);
+  const [imageBase64Value, setImageBase64Value] = useState<string | null>(null);
+  console.log(imageBase64Value);
+  const handleImageUpload = (info: UploadChangeParam) => {
+    const { file } = info;
+    if (file.status === 'uploading') {
+      setImageLoading(true);
+      return;
+    }
+
+    if (file.status === 'done' && file.originFileObj) {
+      getBase64Value(file.originFileObj, imageBase64Value => {
+        setImageBase64Value(imageBase64Value);
+        setImageLoading(false);
+      });
+    }
+  };
+
   if (!viewer.id || !viewer.hasWallet) {
     return (
       <Content className="host-content">
@@ -87,10 +108,66 @@ export function Host({ viewer }: Props) {
         <Item label="Zip/Postal Code">
           <Input placeholder="Please provide the ZIP code for your listing" />
         </Item>
+        <Item
+          label="Image"
+          extra="Images should be under 1Mb and of type JPG or PNG"
+        >
+          <div className="host__form-image-upload">
+            <Upload
+              name="image"
+              listType="picture-card"
+              showUploadList={false}
+              action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+              beforeUpload={beforeImageUpload}
+              onChange={handleImageUpload}
+            >
+              {imageBase64Value ? (
+                <img src={imageBase64Value} alt="listing" />
+              ) : (
+                <div>
+                  <Icon type={imageLoading ? 'loading' : 'plus'} />
+                  <div className="ant-upload-text">Upload</div>
+                </div>
+              )}
+            </Upload>
+          </div>
+        </Item>
         <Item label="Price" extra="Price in USD/day">
           <InputNumber min={0} placeholder="Your rental price" />
+        </Item>
+
+        <Item>
+          <Button type="primary">Submit</Button>
         </Item>
       </Form>
     </Content>
   );
 }
+const beforeImageUpload = (file: File) => {
+  const fileIsValidImage =
+    file.type === 'image/jpeg' || file.type === 'image/png';
+  const fileIsValidSize = file.size / 1024 / 1024 < 1;
+
+  if (!fileIsValidImage) {
+    displayErrorMessage('You are only able to upload valid PNG or JPEG files');
+    return false;
+  }
+
+  if (!fileIsValidSize) {
+    displayErrorMessage('You are only able to upload files under 1Mb');
+    return false;
+  }
+
+  return fileIsValidSize && fileIsValidImage;
+};
+
+const getBase64Value = (
+  img: File | Blob,
+  callback: (imageBase64Value: string) => void
+) => {
+  const reader = new FileReader();
+  reader.readAsDataURL(img);
+  reader.onload = () => {
+    callback(reader.result as string);
+  };
+};
