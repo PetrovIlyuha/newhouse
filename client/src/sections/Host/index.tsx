@@ -10,6 +10,7 @@ import {
   Upload,
   Button
 } from 'antd';
+import { FormComponentProps } from 'antd/lib/form';
 import { UploadChangeParam } from 'antd/lib/upload';
 import { ListingType } from '../../lib/graphql/globalTypes';
 import { Link } from 'react-router-dom';
@@ -22,10 +23,12 @@ interface Props {
 const { Content } = Layout;
 const { Text, Title } = Typography;
 const { Item } = Form;
-export function Host({ viewer }: Props) {
+
+export const Host = ({ viewer, form }: Props & FormComponentProps) => {
   const [imageLoading, setImageLoading] = useState(false);
   const [imageBase64Value, setImageBase64Value] = useState<string | null>(null);
   console.log(imageBase64Value);
+
   const handleImageUpload = (info: UploadChangeParam) => {
     const { file } = info;
     if (file.status === 'uploading') {
@@ -58,9 +61,16 @@ export function Host({ viewer }: Props) {
       </Content>
     );
   }
+
+  const handleHostListing = e => {
+    e.preventDefault();
+  };
+
+  const { getFieldDecorator } = form;
+
   return (
     <Content className="host-content">
-      <Form layout="vertical">
+      <Form layout="vertical" onSubmit={handleHostListing}>
         <div className="host__form-header">
           <Title level={3} className="host__form-title">
             Let's get Started creating your listings
@@ -72,77 +82,173 @@ export function Host({ viewer }: Props) {
         </div>
 
         <Item label="Home type">
-          <Radio.Group>
-            <Radio.Button value={ListingType.APARTMENT}>
-              <Icon type="bank" style={{ color: iconColor }} />
-              <span>Apartment</span>
-            </Radio.Button>
-            <Radio.Button value={ListingType.HOUSE}>
-              <Icon type="home" style={{ color: iconColor }} />
-              <span>House</span>
-            </Radio.Button>
-          </Radio.Group>
+          {getFieldDecorator('type', {
+            rules: [
+              {
+                required: true,
+                message: 'Please select a home type'
+              }
+            ]
+          })(
+            <Radio.Group>
+              <Radio.Button value={ListingType.APARTMENT}>
+                <Icon type="bank" style={{ color: iconColor }} />
+                <span>Apartment</span>
+              </Radio.Button>
+              <Radio.Button value={ListingType.HOUSE}>
+                <Icon type="home" style={{ color: iconColor }} />
+                <span>House</span>
+              </Radio.Button>
+            </Radio.Group>
+          )}
         </Item>
+
+        <Item label="Max # of Guests">
+          {getFieldDecorator('numOfGuests', {
+            rules: [
+              {
+                required: true,
+                message: 'Please enter a max number of guests'
+              }
+            ]
+          })(<InputNumber min={1} placeholder="4" />)}
+        </Item>
+
         <Item label="Title" extra="Max character count of 45">
-          <Input
-            maxLength={45}
-            placeholder="Stylish loft in the heart of BCN"
-          />
+          {getFieldDecorator('title', {
+            rules: [
+              {
+                required: true,
+                message: 'Please provide a title for your listing'
+              }
+            ]
+          })(
+            <Input
+              maxLength={45}
+              placeholder="Stylish loft in the heart of BCN"
+            />
+          )}
         </Item>
+
         <Item label="Description" extra="Max character count of 500">
-          <Input.TextArea
-            rows={3}
-            maxLength={500}
-            placeholder="Provide your description for the place, for example: Spacious and comfortable room with four-poster bed, private bath, air conditioning and windows to the street"
-          />
+          {getFieldDecorator('description', {
+            rules: [
+              {
+                required: true,
+                message: 'Please provide a description for your listing'
+              }
+            ]
+          })(
+            <Input.TextArea
+              rows={3}
+              maxLength={500}
+              placeholder="Provide your description for the place, for example: Spacious and comfortable room with four-poster bed, private bath, air conditioning and windows to the street"
+            />
+          )}
         </Item>
+
         <Item label="Address">
-          <Input placeholder="San Marco avenue" />
+          {getFieldDecorator('address', {
+            rules: [
+              {
+                required: true,
+                message: 'Please specify an address for your listing'
+              }
+            ]
+          })(<Input placeholder="San Marco avenue" />)}
         </Item>
+
         <Item label="City/Town">
-          <Input placeholder="Barcelona" />
+          {getFieldDecorator('city', {
+            rules: [
+              {
+                required: true,
+                message:
+                  'Please declare the city (region) where your listing is located'
+              }
+            ]
+          })(<Input placeholder="Barcelona" />)}
         </Item>
+
         <Item label="State/Province">
-          <Input placeholder="Catalona" />
+          {getFieldDecorator('state', {
+            rules: [
+              {
+                required: true,
+                message: 'Please specify a state (or province) of your listing'
+              }
+            ]
+          })(<Input placeholder="Catalona" />)}
         </Item>
+
         <Item label="Zip/Postal Code">
-          <Input placeholder="Please provide the ZIP code for your listing" />
+          {getFieldDecorator('postalCode', {
+            rules: [
+              {
+                required: true,
+                message: 'Please specify a zip (or postal) code'
+              }
+            ]
+          })(
+            <Input placeholder="Please provide the ZIP code for your listing" />
+          )}
         </Item>
+
         <Item
           label="Image"
           extra="Images should be under 1Mb and of type JPG or PNG"
         >
           <div className="host__form-image-upload">
-            <Upload
-              name="image"
-              listType="picture-card"
-              showUploadList={false}
-              action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-              beforeUpload={beforeImageUpload}
-              onChange={handleImageUpload}
-            >
-              {imageBase64Value ? (
-                <img src={imageBase64Value} alt="listing" />
-              ) : (
-                <div>
-                  <Icon type={imageLoading ? 'loading' : 'plus'} />
-                  <div className="ant-upload-text">Upload</div>
-                </div>
-              )}
-            </Upload>
+            {getFieldDecorator('image', {
+              rules: [
+                {
+                  required: true,
+                  message: 'Please provide an image for your listing'
+                }
+              ]
+            })(
+              <Upload
+                name="image"
+                listType="picture-card"
+                showUploadList={false}
+                action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                beforeUpload={beforeImageUpload}
+                onChange={handleImageUpload}
+              >
+                {imageBase64Value ? (
+                  <img src={imageBase64Value} alt="listing" />
+                ) : (
+                  <div>
+                    <Icon type={imageLoading ? 'loading' : 'plus'} />
+                    <div className="ant-upload-text">Upload</div>
+                  </div>
+                )}
+              </Upload>
+            )}
           </div>
         </Item>
+
         <Item label="Price" extra="Price in USD/day">
-          <InputNumber min={0} placeholder="Your rental price" />
+          {getFieldDecorator('price', {
+            rules: [
+              {
+                required: true,
+                message: 'Please specify a price per day'
+              }
+            ]
+          })(<InputNumber min={0} placeholder="Your rental price" />)}
         </Item>
 
         <Item>
-          <Button type="primary">Submit</Button>
+          <Button type="primary" htmlType="submit">
+            Submit
+          </Button>
         </Item>
       </Form>
     </Content>
   );
-}
+};
+
 const beforeImageUpload = (file: File) => {
   const fileIsValidImage =
     file.type === 'image/jpeg' || file.type === 'image/png';
@@ -171,3 +277,7 @@ const getBase64Value = (
     callback(reader.result as string);
   };
 };
+
+export const WrappedHost = Form.create<Props & FormComponentProps>({
+  name: 'host_form'
+})(Host);
