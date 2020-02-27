@@ -2,6 +2,11 @@ import { IResolvers } from 'apollo-server-express';
 import { Booking, Listing, Database } from '../../../lib/types';
 
 export const bookingsResolver: IResolvers = {
+  Mutation: {
+    createBooking: () => {
+      return 'Mutation.createBooking';
+    }
+  },
   Booking: {
     id: (booking: Booking): string => {
       return booking._id.toString();
