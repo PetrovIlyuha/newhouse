@@ -1,5 +1,6 @@
 import { IResolvers } from 'apollo-server-express';
 import { Request } from 'express';
+import { Stripe } from '../../../lib/api/Stripe';
 import { Booking, Listing, Database } from '../../../lib/types';
 import { authorize } from '../../../lib/utils';
 import { CreateBookingArgs } from './types';
@@ -57,18 +58,50 @@ export const bookingsResolver: IResolvers = {
           );
         }
 
-        // create Stripe charge on behalf of host
+        await Stripe.charge(totalPrice, source, host.walletId);
 
-        // insert a new booking to bookings collection
+        const insertResult = await db.bookings.insertOne({
+          _id: new ObjectId(),
+          listing: listing._id,
+          tenant: viewer._id,
+          checkIn,
+          checkOut
+        });
 
-        //update user document of host to increment income
+        const insertedBooking: Booking = insertResult.ops[0];
 
-        // update bookings field of tenant
+        await db.users.updateOne(
+          {
+            _id: host._id
+          },
+          {
+            $inc: { income: totalPrice }
+          }
+        );
 
-        // update bookings field of listing document
+        await db.users.updateOne(
+          {
+            _id: viewer._id
+          },
+          {
+            $push: { bookings: insertedBooking._id }
+          }
+        );
 
-        // return newly inserted booking
-      } catch (err) {}
+        await db.listings.updateOne(
+          {
+            _id: listing._id
+          },
+          {
+            $set: { bookingsIndex },
+            $push: { bookings: insertedBooking._id }
+          }
+        );
+
+        return insertedBooking;
+      } catch (err) {
+        throw new Error(`Failed to create a booking: ${err}`);
+      }
     }
   },
   Booking: {
