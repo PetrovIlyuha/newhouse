@@ -9,7 +9,8 @@ import { LISTING } from '../../lib/graphql/queries';
 import {
   ListingDetails,
   ListingBookings,
-  ListingCreateBooking
+  ListingCreateBooking,
+  ListingCreateBookingModal
 } from './components';
 
 import {
@@ -35,6 +36,7 @@ export const Listing = ({
   const [bookingsPage, setBookingsPage] = useState(1);
   const [checkInDate, setCheckInDate] = useState<Moment | null>(null);
   const [checkOutDate, setCheckOutDate] = useState<Moment | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const { loading, data, error } = useQuery<ListingData, ListingVariables>(
     LISTING,
@@ -89,9 +91,16 @@ export const Listing = ({
       checkOutDate={checkOutDate}
       setCheckInDate={setCheckInDate}
       setCheckOutDate={setCheckOutDate}
+      setModalVisible={setModalVisible}
     />
   ) : null;
 
+  const listingCreateBookingModalElement = (
+    <ListingCreateBookingModal
+      modalVisible={modalVisible}
+      setModalVisible={setModalVisible}
+    />
+  );
   return (
     <Content className="listings">
       <Row gutter={24} type="flex" justify="space-between">
@@ -103,6 +112,7 @@ export const Listing = ({
           {listingCreateBookingElement}
         </Col>
       </Row>
+      {listingCreateBookingModalElement}
     </Content>
   );
 };
