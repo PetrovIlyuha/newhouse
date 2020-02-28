@@ -101,6 +101,7 @@ export const Host = ({ viewer, form }: Props & FormComponentProps) => {
   if (data && data.hostListing) {
     return <Redirect to={`/listing/${data.hostListing.id}`} />;
   }
+
   const handleHostListing = (evt: FormEvent) => {
     evt.preventDefault();
 
