@@ -1,11 +1,15 @@
 import React from 'react';
 import moment, { Moment } from 'moment';
+import { Viewer } from '../../../../lib/types';
+import { Listing as ListingData } from '../../../../lib/graphql/queries/Listing/__generated__/Listing';
 import { Button, Card, Divider, Typography, DatePicker } from 'antd';
 import { displayErrorMessage, formatListingPrice } from '../../../../lib/utils';
-const { Paragraph, Title } = Typography;
+const { Paragraph, Title, Text } = Typography;
 
 interface Props {
   price: number;
+  viewer: Viewer;
+  host: ListingData['listing']['host'];
   checkInDate: Moment | null;
   checkOutDate: Moment | null;
   setCheckInDate: (checkInDate: Moment | null) => void;
@@ -13,6 +17,8 @@ interface Props {
 }
 
 export const ListingCreateBooking = ({
+  host,
+  viewer,
   price,
   checkInDate,
   checkOutDate,
@@ -39,8 +45,17 @@ export const ListingCreateBooking = ({
     setCheckOutDate(selectedCheckOutDate);
   };
 
-  const checkOutInputDisabled = !checkInDate;
-  const buttonDisabled = !checkInDate || !checkOutDate;
+  const viewerIsHost = viewer.id === host.id;
+  const checkInInputDisabled = !viewer.id || viewerIsHost;
+  const checkOutInputDisabled = checkInInputDisabled || !checkInDate;
+  const buttonDisabled = checkInInputDisabled || !checkInDate || !checkOutDate;
+
+  let buttonMessage = "You won't be charged immediately yet.";
+  if (!viewer.id) {
+    buttonMessage = 'You have to be signed in to book a listing.';
+  } else if (viewerIsHost) {
+    buttonMessage = "You can't book your own listing.";
+  }
   return (
     <div className="listing-booking">
       <Card className="listing-booking__card">
@@ -57,6 +72,7 @@ export const ListingCreateBooking = ({
             <DatePicker
               value={checkInDate ? checkInDate : undefined}
               format={'YYYY/MM/DD'}
+              disabled={checkInInputDisabled}
               showToday={false}
               disabledDate={disabledDate}
               onChange={dateValue => setCheckInDate(dateValue)}
@@ -83,6 +99,9 @@ export const ListingCreateBooking = ({
         >
           Request to Book!
         </Button>
+        <Text type="secondary" mark>
+          {buttonMessage}
+        </Text>
       </Card>
     </div>
   );
