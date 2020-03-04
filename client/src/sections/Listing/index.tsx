@@ -10,7 +10,7 @@ import {
   ListingDetails,
   ListingBookings,
   ListingCreateBooking,
-  ListingCreateBookingModal
+  WrappedListingCreateBookingModal as ListingCreateBookingModal
 } from './components';
 
 import {

@@ -1,9 +1,22 @@
 import React from 'react';
+import {
+  CardElement,
+  injectStripe,
+  ReactStripeElements
+} from 'react-stripe-elements';
 import { useMutation } from '@apollo/react-hooks';
 import { Modal, Button, Divider, Icon, Typography } from 'antd';
 import moment, { Moment } from 'moment';
 import { CREATE_BOOKING } from '../../../../lib/graphql/mutations/CreateBooking';
-import { formatListingPrice } from '../../../../lib/utils';
+import {
+  CreateBooking as CreateBookingData,
+  CreateBookingVariables
+} from '../../../../lib/graphql/mutations/CreateBooking/__generated__/CreateBooking';
+import {
+  formatListingPrice,
+  displaySuccessNotification,
+  displayErrorMessage
+} from '../../../../lib/utils';
 const { Paragraph, Text, Title } = Typography;
 
 interface Props {
@@ -19,8 +32,9 @@ export const ListingCreateBookingModal = ({
   price,
   checkOutDate,
   checkInDate,
-  setModalVisible
-}: Props) => {
+  setModalVisible,
+  stripe
+}: Props & ReactStripeElements.InjectedStripeProps) => {
   let daysBooked = checkOutDate.diff(checkInDate, 'days') + 1;
   let listingPrice = daysBooked * price;
   return (
@@ -66,6 +80,10 @@ export const ListingCreateBookingModal = ({
         <Divider />
 
         <div className="listing-booking-modal__stripe-card-section">
+          <CardElement
+            hidePostalCode
+            className="listing-booking-modal__stripe-card"
+          />
           <Button
             size="large"
             type="primary"
@@ -78,3 +96,7 @@ export const ListingCreateBookingModal = ({
     </Modal>
   );
 };
+
+export const WrappedListingCreateBookingModal = injectStripe(
+  ListingCreateBookingModal
+);
